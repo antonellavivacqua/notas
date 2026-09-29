@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sistema de Calificaciones</title>
+
+    <!-- Aplica el tema ANTES de pintar la página (evita el parpadeo claro→oscuro) -->
+    <script>
+        (function () {
+            var tema = null;
+            try { tema = localStorage.getItem("tema"); } catch (e) {}
+
+            if (tema !== "light" && tema !== "dark") {
+                tema = window.matchMedia("(prefers-color-scheme: dark)").matches
+                    ? "dark" : "light";
+            }
+
+            document.documentElement.setAttribute("data-theme", tema);
+        })();
+    </script>
+
+    <!-- Tipografía Inter (opcional: si no hay internet usa la fuente del sistema) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+
+<body>
+
+<header>
+
+    <h1>Sistema de Gestión de Calificaciones</h1>
+
+    <button id="tema-toggle"
+            type="button"
+            aria-label="Cambiar tema"
+            title="Cambiar tema">🌙</button>
+
+</header>
+
+<div class="container">
+
+    <aside id="cursos" class="panel">
+
+        <h2>Cursos</h2>
+
+    </aside>
+
+    <aside id="alumnos" class="panel">
+
+        <input type="search"
+               id="buscador"
+               placeholder="Buscar alumno en toda la escuela..."
+               autocomplete="off">
+
+        <div id="alumnos-contenido">
+            <h2>Seleccione un curso</h2>
+        </div>
+
+    </aside>
+
+    <main id="detalle" class="panel">
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+
+</body>
+
+</html>

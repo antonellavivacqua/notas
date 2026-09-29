@@ -1,0 +1,904 @@
+/* ==========================================================
+   VARIABLES DE TEMA
+   ========================================================== */
+
+:root {
+    color-scheme: light;
+
+    --bg-primary: #f5f4f0;
+    --card-bg: #ffffff;
+    --card-bg-alt: #faf9f6;
+    --border-color: #e6e3dc;
+    --border-strong: #d3cfc5;
+    --text-color: #1d1c1a;
+    --text-muted: #6c6860;
+
+    --accent-color: #0f766e;
+    --accent-soft: #e3f1ee;
+    --accent-contrast: #ffffff;
+
+    /* estados de las notas */
+    --ok-color: #26703f;
+    --ok-soft: #e4f3e9;
+    --bad-color: #b42318;
+    --bad-soft: #fde8e6;
+
+    /* pendientes / avisos */
+    --warm-soft: #f8eed6;
+    --warm-text: #7a5a10;
+    --warn-color: #c98a12;
+
+    --shadow-sm: 0 1px 2px rgba(29, 28, 26, 0.05);
+    --shadow-md: 0 6px 20px rgba(29, 28, 26, 0.07);
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --header-h: 64px;
+
+    --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    --bg-primary: #111312;
+    --card-bg: #191c1b;
+    --card-bg-alt: #1f2322;
+    --border-color: #2a2f2d;
+    --border-strong: #3a403d;
+    --text-color: #ecebe7;
+    --text-muted: #9c9a93;
+
+    --accent-color: #4db6a8;
+    --accent-soft: rgba(77, 182, 168, 0.14);
+    --accent-contrast: #0a1311;
+
+    --ok-color: #6fcf97;
+    --ok-soft: rgba(111, 207, 151, 0.14);
+    --bad-color: #f2837a;
+    --bad-soft: rgba(242, 131, 122, 0.15);
+
+    --warm-soft: rgba(224, 174, 70, 0.14);
+    --warm-text: #e3b95c;
+    --warn-color: #e3b95c;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* ==========================================================
+   BASE
+   ========================================================== */
+
+/* Se aplica un instante al cambiar de tema para que todo cambie a la vez */
+.sin-transiciones,
+.sin-transiciones * {
+    transition: none !important;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--text-color);
+    background: var(--bg-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================================
+   HEADER + BOTÓN DE TEMA
+   ========================================================== */
+
+header {
+    height: var(--header-h);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+header h1 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+header h1::before {
+    content: "";
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 10px;
+    border-radius: 2px;
+    background: var(--accent-color);
+    vertical-align: middle;
+}
+
+#tema-toggle {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    font-size: 1.05rem;
+    line-height: 1;
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+#tema-toggle:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+}
+
+#tema-toggle:focus-visible,
+.curso-btn:focus-visible,
+.btn-imprimir:focus-visible {
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* ==========================================================
+   LAYOUT
+   ========================================================== */
+
+.container {
+    display: grid;
+    grid-template-columns: 240px 360px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    gap: 16px;
+    padding: 16px;
+    height: calc(100vh - var(--header-h));
+}
+
+.panel {
+    min-height: 0;
+    padding: 18px;
+    overflow-y: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+.panel h2 {
+    margin-bottom: 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* ==========================================================
+   COLORES DE NOTAS (verde = aprobada, rojo = desaprobada, gris = vacía)
+   ========================================================== */
+
+.nota-ok {
+    color: var(--ok-color);
+}
+
+.nota-bad {
+    color: var(--bad-color);
+}
+
+.nota-vacia {
+    color: var(--text-muted);
+}
+
+/* ==========================================================
+   PANEL DE CURSOS
+   ========================================================== */
+
+.categoria {
+    margin: 18px 0 8px;
+    padding: 0 2px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+h2 + .categoria {
+    margin-top: 4px;
+}
+
+.curso-btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 6px;
+    padding: 9px 12px;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+    color: var(--text-color);
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.curso-btn:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+}
+
+.curso-btn.activo {
+    font-weight: 600;
+    color: var(--accent-color);
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+}
+
+/* ==========================================================
+   PANEL DE ALUMNOS + BUSCADOR
+   ========================================================== */
+
+#alumnos {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+#buscador {
+    flex-shrink: 0;
+    width: 100%;
+    margin-bottom: 14px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--text-color);
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+#buscador::placeholder {
+    color: var(--text-muted);
+}
+
+#buscador:focus {
+    outline: none;
+    background: var(--card-bg);
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+#alumnos-contenido {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+/* Contador + filtro "solo con pendientes" */
+.lista-toolbar {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.filtro-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    cursor: pointer;
+    user-select: none;
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    transition: all 0.2s ease;
+}
+
+.filtro-check:hover {
+    border-color: var(--accent-color);
+}
+
+.filtro-check:has(input:checked) {
+    font-weight: 600;
+    color: var(--accent-color);
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+}
+
+.filtro-check input {
+    margin: 0;
+    accent-color: var(--accent-color);
+}
+
+.alumnos-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    align-content: start;
+    flex: 1;
+    min-height: 0;
+    padding-right: 4px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+.alumnos-grid.resultados {
+    grid-template-columns: 1fr;
+}
+
+.alumno-item {
+    padding: 7px 10px;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+    color: var(--text-color);
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease;
+}
+
+.alumno-item:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+}
+
+/* Marca lateral para alumnos con materias pendientes */
+.alumno-item.con-pendientes {
+    border-left: 3px solid var(--warn-color);
+}
+
+.alumno-item.resultado {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.alumno-nombre {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.alumno-curso {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--accent-color);
+    background: var(--accent-soft);
+    border-radius: 999px;
+}
+
+/* Selección activa (después de :hover para que lo sobrescriba) */
+.alumno-item.activo,
+.alumno-item.activo:hover {
+    font-weight: 500;
+    color: var(--accent-contrast);
+    background: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.alumno-item.activo .alumno-curso {
+    color: var(--accent-contrast);
+    background: color-mix(in srgb, var(--accent-contrast) 18%, transparent);
+}
+
+.sin-resultados {
+    padding: 8px 0;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================
+   DETALLE: CABECERA, TARJETAS DE DATOS, PENDIENTES
+   ========================================================== */
+
+#detalle h2 {
+    margin-bottom: 2px;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: none;
+    color: var(--text-color);
+}
+
+#detalle p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.ficha-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.ficha-sub {
+    margin-top: 2px;
+}
+
+.btn-imprimir {
+    flex-shrink: 0;
+    padding: 8px 12px;
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-color);
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-imprimir:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent-color);
+}
+
+.solo-impresion {
+    display: none;
+}
+
+/* Indicadores (promedios, totales) */
+.kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 12px 14px;
+    background: var(--card-bg-alt);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.kpi-label {
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.kpi-valor {
+    font-size: 1.6rem;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+}
+
+.kpi-nota {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Materias pendientes */
+.pendientes-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-bottom: 14px;
+    padding: 10px 14px;
+    background: var(--warm-soft);
+    border: 1px solid color-mix(in srgb, var(--warn-color) 35%, transparent);
+    border-radius: var(--radius-md);
+}
+
+.pendientes-titulo {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--warm-text);
+}
+
+.pendientes-lista {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pendiente-tag {
+    padding: 2px 10px;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: var(--warm-text);
+    background: var(--card-bg);
+    border: 1px solid color-mix(in srgb, var(--warn-color) 35%, transparent);
+    border-radius: 999px;
+}
+
+.pendientes-box.sin-pendientes {
+    background: var(--ok-soft);
+    border-color: transparent;
+}
+
+.pendientes-box.sin-pendientes .pendientes-titulo {
+    color: var(--ok-color);
+}
+
+.seccion-titulo {
+    margin: 22px 0 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.nota-pie,
+.estado-pista {
+    margin-top: 18px;
+    font-size: 0.78rem !important;
+}
+
+/* Estado vacío / mensajes */
+.estado-vacio {
+    display: grid;
+    place-items: center;
+    gap: 6px;
+    padding: 60px 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+
+.estado-icono {
+    font-size: 2rem;
+    opacity: 0.7;
+}
+
+/* ==========================================================
+   RESUMEN DEL CURSO: BARRAS DE PROMEDIO POR MATERIA
+   ========================================================== */
+
+.barras {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.barra-fila {
+    display: grid;
+    grid-template-columns: minmax(90px, 200px) 1fr 40px;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+}
+
+.barra-nombre {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.barra-pista {
+    height: 8px;
+    overflow: hidden;
+    background: var(--border-color);
+    border-radius: 999px;
+}
+
+.barra-relleno {
+    height: 100%;
+    border-radius: 999px;
+}
+
+.barra-relleno.nota-ok {
+    background: var(--ok-color);
+}
+
+.barra-relleno.nota-bad {
+    background: var(--bad-color);
+}
+
+.barra-relleno.nota-vacia {
+    background: transparent;
+}
+
+.barra-valor {
+    text-align: right;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================================
+   TARJETAS DE MATERIA
+   ========================================================== */
+
+.materia-card {
+    margin-top: 14px;
+    overflow-x: auto;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+}
+
+.materia-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 16px;
+    background: var(--card-bg-alt);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.materia-head h3 {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.materia-meta {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 12px;
+}
+
+.prom-chip {
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 999px;
+    font-variant-numeric: tabular-nums;
+}
+
+.prom-chip.nota-ok {
+    background: var(--ok-soft);
+}
+
+.prom-chip.nota-bad {
+    background: var(--bad-soft);
+}
+
+/* Mini gráfico de evolución */
+.spark {
+    display: block;
+}
+
+.spark-min {
+    stroke: var(--border-strong);
+    stroke-width: 1;
+    stroke-dasharray: 3 3;
+}
+
+.spark-linea {
+    fill: none;
+    stroke: var(--text-muted);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.7;
+}
+
+.punto-ok {
+    fill: var(--ok-color);
+}
+
+.punto-bad {
+    fill: var(--bad-color);
+}
+
+.tabla-notas {
+    width: 100%;
+    min-width: 560px;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.tabla-notas th,
+.tabla-notas td {
+    padding: 9px 8px;
+    text-align: center;
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tabla-notas th:last-child,
+.tabla-notas td:last-child {
+    border-right: none;
+}
+
+.tabla-notas tbody td {
+    font-weight: 500;
+    border-bottom: none;
+}
+
+.tabla-notas tbody td.nota-ok {
+    background: var(--ok-soft);
+}
+
+.tabla-notas tbody td.nota-bad {
+    background: var(--bad-soft);
+}
+
+.tabla-notas tbody td.col-cuat {
+    font-weight: 700;
+}
+
+.tabla-notas thead tr:nth-child(2) th {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: var(--card-bg-alt);
+}
+
+.grupo-cuatrimestre,
+.grupo-cierres {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.grupo-cuatrimestre {
+    color: var(--accent-color);
+    background: var(--accent-soft);
+}
+
+.grupo-cierres {
+    color: var(--warm-text);
+    background: var(--warm-soft);
+}
+
+/* ==========================================================
+   RESPONSIVE
+   ========================================================== */
+
+@media (max-width: 1000px) {
+
+    .container {
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        height: auto;
+    }
+
+    .alumnos-grid {
+        max-height: 50vh;
+    }
+}
+
+@media (max-width: 600px) {
+
+    header {
+        padding: 0 16px;
+    }
+
+    .container {
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .alumnos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ficha-head {
+        flex-direction: column;
+    }
+
+    .materia-head {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ==========================================================
+   IMPRESIÓN / GUARDAR COMO PDF (siempre en colores claros)
+   ========================================================== */
+
+@page {
+    margin: 14mm;
+}
+
+@media print {
+
+    :root,
+    :root[data-theme="dark"] {
+        color-scheme: light;
+
+        --bg-primary: #ffffff;
+        --card-bg: #ffffff;
+        --card-bg-alt: #faf9f6;
+        --border-color: #d9d6ce;
+        --border-strong: #bdb9ae;
+        --text-color: #1d1c1a;
+        --text-muted: #5c5850;
+
+        --accent-color: #0f766e;
+        --accent-soft: #e3f1ee;
+        --accent-contrast: #ffffff;
+
+        --ok-color: #26703f;
+        --ok-soft: #e4f3e9;
+        --bad-color: #b42318;
+        --bad-soft: #fde8e6;
+
+        --warm-soft: #f8eed6;
+        --warm-text: #7a5a10;
+        --warn-color: #c98a12;
+    }
+
+    * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    body {
+        font-size: 13px;
+        background: #ffffff;
+    }
+
+    header,
+    #cursos,
+    #alumnos,
+    .no-imprimir {
+        display: none !important;
+    }
+
+    .container {
+        display: block;
+        height: auto;
+        padding: 0;
+    }
+
+    .panel {
+        padding: 0;
+        overflow: visible;
+        border: none;
+        box-shadow: none;
+    }
+
+    .solo-impresion {
+        display: block;
+        margin-bottom: 12px;
+        font-size: 0.8rem;
+    }
+
+    .materia-card {
+        overflow: visible;
+        break-inside: avoid;
+        box-shadow: none;
+    }
+
+    .tabla-notas {
+        min-width: 0;
+    }
+}
